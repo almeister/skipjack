@@ -12,10 +12,12 @@ public class SchoolManager : MonoBehaviour
   public Vector3Int tankDimensions = new(5, 4, 2);
   [Range(0, 2)] public float tankMargin = 0.5f;
   public float tankAvoidanceFactor = 0.5f;
-  public float turningFactor = 2f;
+  public float timeToTurn = 0.5f;
   [Range(0, 50)] public float visibilityRange = 1.5f;
-  [Range(0, 50)] public float centeringFactor = 4.0f;
-
+  [Range(0, 1)] public float centeringFactor = 0.25f;
+  [Range(0, 1)] public float alignmentFactor = 0.25f;
+  [Range(0, 1)] public float separationRange = 0.25f;
+  [Range(0, 1)] public float separationFactor = 0.5f;
   public Vector3 targetPosition = Vector3.zero;
 
   GameObject[] allFish;
@@ -60,19 +62,4 @@ public class SchoolManager : MonoBehaviour
       allFish[i] = GameObject.Instantiate(fishPrefab, position, Quaternion.identity, transform);
     }
   }
-
-  // public Vector3 GetTankCentre() {
-  //   return tankDimensions;
-  // }
-
-  // private void CalculateCentre()
-  // {
-  //   Vector3 sum = Vector3.zero;
-  //   foreach (GameObject fish in allFish)
-  //   {
-  //     sum += fish.transform.position;
-  //   }
-  //   schoolCentre = sum / allFish.Length;
-  // }
-
 }

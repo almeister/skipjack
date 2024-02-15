@@ -534,9 +534,12 @@ MonoBehaviour:
   tankDimensions: {x: 10, y: 8, z: 4}
   tankMargin: 0.5
   tankAvoidanceFactor: 0.5
-  turningFactor: 10
+  timeToTurn: 0.5
   visibilityRange: 1.5
-  centeringFactor: 0
+  centeringFactor: 0.25
+  alignmentFactor: 0.25
+  separationRange: 0.25
+  separationFactor: 0.5
   targetPosition: {x: 0, y: 0, z: 0}
 --- !u!4 &781267679
 Transform:
