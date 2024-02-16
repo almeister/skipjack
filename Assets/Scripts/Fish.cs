@@ -1,124 +1,90 @@
-using System.Collections;
-using System.Collections.Generic;
+using TreeEditor;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 
 public class Fish : MonoBehaviour
 {
-  public SchoolManager schoolManager;
-  public float speed = 0f;
+  public Vector3 Velocity { get; set; } = Vector3.zero;
 
-  readonly float minSpeed = 2f;
-  readonly float maxSpeed = 5f;
+  [SerializeField] FishAttributesScriptableObject fishAttributes;
 
-  Vector3 currentTarget = Vector3.zero;
-  float timeInTurn = 0f;
+  SchoolManager schoolManager;
 
   void Start()
   {
     schoolManager = transform.parent.GetComponent<SchoolManager>();
-    speed = Random.Range(minSpeed, maxSpeed);
+    Velocity = new Vector3(0, 0, Random.Range(fishAttributes.minSpeed, fishAttributes.maxSpeed));
   }
 
   void Update()
   {
-    AvoidOtherFish();
-    AlignWithOtherFish();
-    // CohereToGroupCentre();
-    AvoidTankWalls();
+    // Separation
+    Vector3 distanceToOtherFish = Vector3.zero;
+    foreach (GameObject fish in schoolManager.GetAllFish())
+    {
+      Vector3 distanceToFish = fish.transform.position - transform.position;
+      if (distanceToFish.magnitude <= fishAttributes.separationRange)
+      {
+        distanceToOtherFish += distanceToFish;
+      }
+    }
 
-    transform.Translate(transform.forward * Time.deltaTime * speed, Space.World);
+    Velocity += distanceToOtherFish * fishAttributes.separationFactor;
+    // Debug.Log($"Separation velocity: {Velocity}");
+
+    // Alignment
+    int visibleFishCount = 0;
+    Vector3 averageVelocity = Vector3.zero;
+    foreach (GameObject fishGameObject in schoolManager.GetAllFish())
+    {
+      if ((transform.position - fishGameObject.transform.position).magnitude <= fishAttributes.alignmentRange)
+      {
+        visibleFishCount += 1;
+        Fish fish = fishGameObject.GetComponent<Fish>();
+        averageVelocity += fish.Velocity;
+      }
+
+    }
+
+    if (visibleFishCount > 0)
+    {
+      averageVelocity /= visibleFishCount;
+    }
+
+    Velocity += (averageVelocity - Velocity) * fishAttributes.alignmentFactor;
+    // Debug.Log($"Alignment velocity: {Velocity}");
+
+    // Avoid tank walls
+    if (transform.position.x > schoolManager.SwimmingBounds.x)
+    {
+      Velocity -= new Vector3(0, 0, fishAttributes.turnFactor * Time.deltaTime);
+    }
+    if (transform.position.x < -schoolManager.SwimmingBounds.x)
+    {
+      Velocity += new Vector3(0, 0, fishAttributes.turnFactor * Time.deltaTime);
+    }
+    if (transform.position.y > schoolManager.SwimmingBounds.y)
+    {
+      Velocity -= new Vector3(0, 0, fishAttributes.turnFactor * Time.deltaTime);
+    }
+    if (transform.position.y < -schoolManager.SwimmingBounds.y)
+    {
+      Velocity += new Vector3(0, 0, fishAttributes.turnFactor * Time.deltaTime);
+    }
+
+    if (transform.position.z > schoolManager.SwimmingBounds.z)
+    {
+      Velocity -= new Vector3(0, 0, fishAttributes.turnFactor * Time.deltaTime);
+    }
+    if (transform.position.z < -schoolManager.SwimmingBounds.z)
+    {
+      Velocity += new Vector3(0, 0, fishAttributes.turnFactor * Time.deltaTime);
+    }
+    Debug.Log($"Wall Avoidance velocity: {Velocity}");
+
+    transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(Velocity), fishAttributes.turnFactor * Time.deltaTime);
+    transform.Translate(Velocity * Time.deltaTime, Space.World);
     Debug.DrawRay(transform.position, transform.forward, Color.yellow);
   }
 
-  private void AvoidOtherFish()
-  {
-    Vector3 sumDeltaToOtherFish = Vector3.zero;
-    foreach (GameObject fish in schoolManager.GetAllFish())
-    {
-      if ((transform.position - fish.transform.position).magnitude <= schoolManager.separationRange)
-      {
-        sumDeltaToOtherFish += fish.transform.position;
-      }
-    }
-
-    float dotProduct = Vector3.Dot(transform.forward, sumDeltaToOtherFish.normalized);
-    speed += dotProduct * schoolManager.separationFactor;
-  }
-
-  private void AlignWithOtherFish()
-  {
-    Vector3 sumDeltaToOtherFish = Vector3.zero;
-    int neighbouringFish = 0;
-    foreach (GameObject fish in schoolManager.GetAllFish())
-    {
-      if ((transform.position - fish.transform.position).magnitude <= schoolManager.visibilityRange)
-      {
-        sumDeltaToOtherFish += fish.transform.position;
-        neighbouringFish += 1;
-      }
-    }
-
-    if (neighbouringFish > 0)
-    {
-      float averageSpeed = sumDeltaToOtherFish.magnitude / neighbouringFish;
-      speed += (averageSpeed - speed) * schoolManager.alignmentFactor;
-    }
-
-    // if (!schoolManager.targetPosition.Equals(currentTarget))
-    // {
-    //   timeInTurn = 0f;
-    //   currentTarget = schoolManager.targetPosition;
-    // }
-
-    // timeInTurn += Time.deltaTime;
-    // transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(schoolManager.targetPosition), timeInTurn / schoolManager.timeToTurn);
-  }
-
-  // Cohesion
-  // Each bird moves towards the centre of mass of other birds
-  // within it's range of visibility
-  private void CohereToGroupCentre()
-  {
-    // Get in-range fish
-    int visibleCount = 0;
-    Vector3 positionSum = Vector3.zero;
-    foreach (GameObject fish in schoolManager.GetAllFish())
-    {
-      if ((transform.position - fish.transform.position).magnitude <= schoolManager.visibilityRange)
-      {
-        positionSum += fish.transform.position;
-        visibleCount++;
-      }
-    }
-
-    if (visibleCount > 0)
-    {
-      // Calculate centre of mass
-      Vector3 centreOfMass = positionSum / visibleCount;
-      speed += Vector3.Dot(transform.forward, centreOfMass.normalized) * schoolManager.centeringFactor;
-      // Move towards centre of mass
-      transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(centreOfMass), Time.deltaTime * schoolManager.centeringFactor);
-    }
-  }
-
-  private void AvoidTankWalls()
-  {
-    float step = schoolManager.tankAvoidanceFactor * Time.deltaTime;
-    if (Mathf.Abs(transform.position.x) > schoolManager.tankDimensions.x - schoolManager.tankMargin)
-    {
-      transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(-transform.position), schoolManager.tankAvoidanceFactor);
-    }
-
-    if (Mathf.Abs(transform.position.y) > schoolManager.tankDimensions.y - schoolManager.tankMargin)
-    {
-      transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(-transform.position), schoolManager.tankAvoidanceFactor);
-    }
-
-    if (Mathf.Abs(transform.position.z) > schoolManager.tankDimensions.z - schoolManager.tankMargin)
-    {
-      transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(-transform.position), schoolManager.tankAvoidanceFactor);
-    }
-  }
 }

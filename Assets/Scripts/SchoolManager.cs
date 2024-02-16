@@ -5,45 +5,32 @@ using UnityEngine;
 
 public class SchoolManager : MonoBehaviour
 {
-  [SerializeField] GameObject fishPrefab;
-  [SerializeField] int fishCount = 15;
-  [SerializeField] bool debugTank = false;
+  [SerializeField] GameObject _fishPrefab;
 
-  public Vector3Int tankDimensions = new(5, 4, 2);
-  [Range(0, 2)] public float tankMargin = 0.5f;
-  public float tankAvoidanceFactor = 0.5f;
-  public float timeToTurn = 0.5f;
-  [Range(0, 50)] public float visibilityRange = 1.5f;
-  [Range(0, 1)] public float centeringFactor = 0.25f;
-  [Range(0, 1)] public float alignmentFactor = 0.25f;
-  [Range(0, 1)] public float separationRange = 0.25f;
-  [Range(0, 1)] public float separationFactor = 0.5f;
-  public Vector3 targetPosition = Vector3.zero;
+  [SerializeField] int _fishCount = 15;
+  [SerializeField] bool _debugTankEnabled = false;
 
+  public Vector3 TankDimensions { get; set; } = new(10f, 8f, 4f);
+  [Range(0, 2)] public float _tankMargin = 0.5f;
+
+  Transform _debugTank;
   GameObject[] allFish;
 
-  // private Vector3 schoolCentre = Vector3.zero;
+  public Vector3 SwimmingBounds
+  {
+    get { return TankDimensions - TankDimensions / 2 - new Vector3(_tankMargin, _tankMargin, _tankMargin); }
+  }
 
   void Start()
   {
+    _debugTank = transform.Find("Tank");
     SpawnFish();
   }
 
   void Update()
   {
-    if (Random.Range(0, 10000) < 50)
-    {
-      targetPosition = new Vector3(Random.Range(-tankDimensions.x, tankDimensions.x),
-                                    Random.Range(-tankDimensions.y, tankDimensions.y),
-                                    Random.Range(-tankDimensions.z, tankDimensions.z));
-    }
-
-    if (debugTank)
-    {
-      Transform tank = transform.Find("Tank");
-      tank.gameObject.SetActive(debugTank);
-      tank.localScale = tankDimensions * 2;
-    }
+    _debugTank.localScale = TankDimensions;
+    _debugTank.gameObject.SetActive(_debugTankEnabled);
   }
 
   public GameObject[] GetAllFish()
@@ -53,13 +40,13 @@ public class SchoolManager : MonoBehaviour
 
   private void SpawnFish()
   {
-    allFish = new GameObject[fishCount];
-    for (int i = 0; i < fishCount; i++)
+    allFish = new GameObject[_fishCount];
+    for (int i = 0; i < _fishCount; i++)
     {
-      Vector3 position = new Vector3(Random.Range(-tankDimensions.x, tankDimensions.x),
-                                      Random.Range(-tankDimensions.y, tankDimensions.y),
-                                      Random.Range(-tankDimensions.z, tankDimensions.z));
-      allFish[i] = GameObject.Instantiate(fishPrefab, position, Quaternion.identity, transform);
+      Vector3 spawnPosition = new Vector3(Random.Range(-SwimmingBounds.x, SwimmingBounds.x),
+                                      Random.Range(-SwimmingBounds.y, SwimmingBounds.y),
+                                      Random.Range(-SwimmingBounds.z, SwimmingBounds.z));
+      allFish[i] = GameObject.Instantiate(_fishPrefab, spawnPosition, Quaternion.identity, transform);
     }
   }
 }

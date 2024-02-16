@@ -45,8 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: daea52a80ef24c847b97138d48a254dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  schoolManager: {fileID: 0}
-  speed: 0.2
+  fishAttributes: {fileID: 11400000, guid: d976124e5fde2424baa7fa937bf6fb88, type: 2}
 --- !u!1001 &724515415194531525
 PrefabInstance:
   m_ObjectHideFlags: 0
