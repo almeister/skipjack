@@ -18,20 +18,54 @@ public class Fish : MonoBehaviour
 
   void Update()
   {
-    // Separation
-    Vector3 distanceToOtherFish = Vector3.zero;
-    foreach (GameObject fish in schoolManager.GetAllFish())
+    DrawDebugPointer();
+
+    AvoidOthers();
+    AlignWithOthers();
+    AvoidBounds();
+
+    transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(Velocity), fishAttributes.turnFactor * Time.deltaTime);
+    transform.Translate(new Vector3(0, 0, Velocity.z * Time.deltaTime), Space.World);
+  }
+
+  private void AvoidBounds()
+  {
+    // Avoid tank walls
+    if (transform.position.x > schoolManager.SwimmingBounds.x)
     {
-      Vector3 distanceToFish = fish.transform.position - transform.position;
-      if (distanceToFish.magnitude <= fishAttributes.separationRange)
-      {
-        distanceToOtherFish += distanceToFish;
-      }
+      Velocity -= new Vector3(fishAttributes.wallAvoidanceFactor * Time.deltaTime, 0, 0);
     }
 
-    Velocity += distanceToOtherFish * fishAttributes.separationFactor;
-    // Debug.Log($"Separation velocity: {Velocity}");
+    if (transform.position.y > schoolManager.SwimmingBounds.y)
+    {
+      Velocity -= new Vector3(0, fishAttributes.wallAvoidanceFactor * Time.deltaTime, 0);
+    }
 
+    if (transform.position.z > schoolManager.SwimmingBounds.z)
+    {
+      Velocity -= new Vector3(0, 0, fishAttributes.wallAvoidanceFactor * Time.deltaTime);
+    }
+
+    if (transform.position.x < -schoolManager.SwimmingBounds.x)
+    {
+      Velocity += new Vector3(fishAttributes.wallAvoidanceFactor * Time.deltaTime, 0, 0);
+    }
+
+    if (transform.position.y < -schoolManager.SwimmingBounds.y)
+    {
+      Velocity += new Vector3(0, fishAttributes.wallAvoidanceFactor * Time.deltaTime, 0);
+    }
+
+    if (transform.position.z < -schoolManager.SwimmingBounds.z)
+    {
+      Velocity += new Vector3(0, 0, fishAttributes.wallAvoidanceFactor * Time.deltaTime);
+    }
+
+    Debug.Log($"Walls Avoidance velocity: {Velocity}");
+  }
+
+  private void AlignWithOthers()
+  {
     // Alignment
     int visibleFishCount = 0;
     Vector3 averageVelocity = Vector3.zero;
@@ -52,39 +86,31 @@ public class Fish : MonoBehaviour
     }
 
     Velocity += (averageVelocity - Velocity) * fishAttributes.alignmentFactor;
-    // Debug.Log($"Alignment velocity: {Velocity}");
-
-    // Avoid tank walls
-    if (transform.position.x > schoolManager.SwimmingBounds.x)
-    {
-      Velocity -= new Vector3(0, 0, fishAttributes.turnFactor * Time.deltaTime);
-    }
-    if (transform.position.x < -schoolManager.SwimmingBounds.x)
-    {
-      Velocity += new Vector3(0, 0, fishAttributes.turnFactor * Time.deltaTime);
-    }
-    if (transform.position.y > schoolManager.SwimmingBounds.y)
-    {
-      Velocity -= new Vector3(0, 0, fishAttributes.turnFactor * Time.deltaTime);
-    }
-    if (transform.position.y < -schoolManager.SwimmingBounds.y)
-    {
-      Velocity += new Vector3(0, 0, fishAttributes.turnFactor * Time.deltaTime);
-    }
-
-    if (transform.position.z > schoolManager.SwimmingBounds.z)
-    {
-      Velocity -= new Vector3(0, 0, fishAttributes.turnFactor * Time.deltaTime);
-    }
-    if (transform.position.z < -schoolManager.SwimmingBounds.z)
-    {
-      Velocity += new Vector3(0, 0, fishAttributes.turnFactor * Time.deltaTime);
-    }
-    Debug.Log($"Wall Avoidance velocity: {Velocity}");
-
-    transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(Velocity), fishAttributes.turnFactor * Time.deltaTime);
-    transform.Translate(Velocity * Time.deltaTime, Space.World);
-    Debug.DrawRay(transform.position, transform.forward, Color.yellow);
+    Debug.Log($"Alignment velocity: {Velocity}");
   }
 
+  private void AvoidOthers()
+  {
+    // Separation
+    Vector3 distanceToOtherFish = Vector3.zero;
+    foreach (GameObject fish in schoolManager.GetAllFish())
+    {
+      Vector3 distanceToFish = fish.transform.position - transform.position;
+      if (distanceToFish.magnitude <= fishAttributes.separationRange)
+      {
+        distanceToOtherFish += distanceToFish;
+      }
+    }
+
+    Velocity += distanceToOtherFish * fishAttributes.separationFactor;
+    Debug.Log($"Separation velocity: {Velocity}");
+  }
+
+  private void DrawDebugPointer()
+  {
+    if (fishAttributes.debugMode)
+    {
+      Debug.DrawRay(transform.position, transform.forward, Color.yellow);
+    }
+  }
 }
