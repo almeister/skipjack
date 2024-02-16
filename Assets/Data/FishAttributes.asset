@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   debugMode: 0
   minSpeed: 2
-  maxSpeed: 5
-  turnFactor: 44.1
-  separationRange: 1
-  separationFactor: 0
-  alignmentRange: 0.3
-  alignmentFactor: 0
-  wallAvoidanceFactor: 34.7
+  maxSpeed: 13.5
+  turnFactor: 23.7
+  separationRange: 0.55
+  separationFactor: 1.1
+  alignmentRange: 1.4
+  alignmentFactor: 5.25
+  wallAvoidanceFactor: 25.8

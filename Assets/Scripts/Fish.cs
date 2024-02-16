@@ -13,7 +13,7 @@ public class Fish : MonoBehaviour
   void Start()
   {
     schoolManager = transform.parent.GetComponent<SchoolManager>();
-    Velocity = new Vector3(0, 0, Random.Range(fishAttributes.minSpeed, fishAttributes.maxSpeed));
+    Velocity = new Vector3(Random.Range(fishAttributes.minSpeed, fishAttributes.maxSpeed), 0, 0);
   }
 
   void Update()
@@ -24,8 +24,9 @@ public class Fish : MonoBehaviour
     AlignWithOthers();
     AvoidBounds();
 
+    Velocity = Vector3.ClampMagnitude(Velocity, fishAttributes.maxSpeed);
     transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(Velocity), fishAttributes.turnFactor * Time.deltaTime);
-    transform.Translate(new Vector3(0, 0, Velocity.z * Time.deltaTime), Space.World);
+    transform.Translate(Velocity * Time.deltaTime, Space.World);
   }
 
   private void AvoidBounds()
@@ -92,17 +93,17 @@ public class Fish : MonoBehaviour
   private void AvoidOthers()
   {
     // Separation
-    Vector3 distanceToOtherFish = Vector3.zero;
+    Vector3 distanceSum = Vector3.zero;
     foreach (GameObject fish in schoolManager.GetAllFish())
     {
-      Vector3 distanceToFish = fish.transform.position - transform.position;
+      Vector3 distanceToFish = transform.position - fish.transform.position;
       if (distanceToFish.magnitude <= fishAttributes.separationRange)
       {
-        distanceToOtherFish += distanceToFish;
+        distanceSum += distanceToFish;
       }
     }
 
-    Velocity += distanceToOtherFish * fishAttributes.separationFactor;
+    Velocity += distanceSum * fishAttributes.separationFactor;
     Debug.Log($"Separation velocity: {Velocity}");
   }
 

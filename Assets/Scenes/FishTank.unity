@@ -299,7 +299,7 @@ Transform:
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -23.88}
+  m_LocalPosition: {x: 0, y: 0, z: -24.77}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -529,8 +529,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _fishPrefab: {fileID: 4989768604584722674, guid: 256658a6233f61d4ba4334f301e2e863,
     type: 3}
-  _fishCount: 15
+  _fishCount: 25
   _debugTankEnabled: 1
+  _tankDimensions: {x: 50, y: 20, z: 10}
   _tankMargin: 0.5
 --- !u!4 &781267679
 Transform:
@@ -658,7 +659,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 10, y: 8, z: 4}
+  m_LocalScale: {x: 50, y: 20, z: 10}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 781267679}

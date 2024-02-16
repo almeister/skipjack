@@ -10,15 +10,22 @@ public class SchoolManager : MonoBehaviour
   [SerializeField] int _fishCount = 15;
   [SerializeField] bool _debugTankEnabled = false;
 
-  public Vector3 TankDimensions { get; set; } = new(10f, 8f, 4f);
+  [SerializeField] Vector3 _tankDimensions = new(10f, 8f, 4f);
   [Range(0, 2)] public float _tankMargin = 0.5f;
 
   Transform _debugTank;
   GameObject[] allFish;
 
+  public Vector3 TankDimensions
+  {
+    get { return _tankDimensions; }
+
+    set { _tankDimensions = value; }
+  }
+
   public Vector3 SwimmingBounds
   {
-    get { return TankDimensions - TankDimensions / 2 - new Vector3(_tankMargin, _tankMargin, _tankMargin); }
+    get { return _tankDimensions - _tankDimensions / 2 - new Vector3(_tankMargin, _tankMargin, _tankMargin); }
   }
 
   void Start()
