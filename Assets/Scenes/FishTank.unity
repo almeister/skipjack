@@ -131,25 +131,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 781267679}
     m_Modifications:
-    - target: {fileID: 3051989709379198438, guid: 256658a6233f61d4ba4334f301e2e863,
-        type: 3}
-      propertyPath: speed
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 3051989709379198438, guid: 256658a6233f61d4ba4334f301e2e863,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 4989768604584722674, guid: 256658a6233f61d4ba4334f301e2e863,
         type: 3}
       propertyPath: m_Name
       value: Tuna
-      objectReference: {fileID: 0}
-    - target: {fileID: 4989768604584722674, guid: 256658a6233f61d4ba4334f301e2e863,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8883991122987493955, guid: 256658a6233f61d4ba4334f301e2e863,
         type: 3}
@@ -527,12 +512,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ba8d248a812d3948a04229ccfa16650, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _fishPrefab: {fileID: 4989768604584722674, guid: 256658a6233f61d4ba4334f301e2e863,
-    type: 3}
-  _fishCount: 25
-  _debugTankEnabled: 1
-  _tankDimensions: {x: 50, y: 20, z: 10}
-  _tankMargin: 0.5
+  schoolAttributes: {fileID: 11400000, guid: 8566b5889aea7b6438131351d046f8a6, type: 2}
 --- !u!4 &781267679
 Transform:
   m_ObjectHideFlags: 0

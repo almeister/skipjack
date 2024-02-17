@@ -12,12 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 048cf0ef1b566f843b91fb11cf22998b, type: 3}
   m_Name: FishAttributes
   m_EditorClassIdentifier: 
-  debugMode: 0
+  debugPointer: 0
+  debugSeparation: 0
+  debugAlignment: 0
   minSpeed: 2
   maxSpeed: 13.5
   turnFactor: 23.7
-  separationRange: 0.55
-  separationFactor: 1.1
-  alignmentRange: 1.4
-  alignmentFactor: 5.25
+  separationRange: 2
+  separationFactor: 2.54
+  alignmentRange: 2.5
+  alignmentFactor: 0.05
   wallAvoidanceFactor: 25.8
