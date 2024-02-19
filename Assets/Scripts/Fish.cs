@@ -1,9 +1,16 @@
 using UnityEngine;
 
-
 public class Fish : MonoBehaviour
 {
   public Vector3 Velocity { get; set; } = Vector3.zero;
+
+  public enum BiasGroup
+  {
+    Lefties = 0,
+    Righties = 1
+  }
+  public BiasGroup Group { get; set; }
+  public float BiasFactor { get; set; }
 
   [SerializeField] FishAttributesScriptableObject fishAttributes;
 
@@ -19,6 +26,9 @@ public class Fish : MonoBehaviour
 
     debugSeparationSphere = transform.Find("DebugSeparationSphere").gameObject;
     debugAlignmentSphere = transform.Find("DebugAlignmentSphere").gameObject;
+
+    Group = Random.Range(0, 1f) < 0.5f ? BiasGroup.Lefties : BiasGroup.Righties;
+    BiasFactor = Random.Range(fishAttributes.minBiasFactor, fishAttributes.maxBiasFactor);
   }
 
   void Update()
@@ -27,12 +37,14 @@ public class Fish : MonoBehaviour
 
     AvoidOthers();
     AlignWithOthers();
+    Cohere();
+    MoveWithBiasGroup();
     AvoidBounds();
 
     Velocity = Vector3.ClampMagnitude(Velocity, fishAttributes.maxSpeed);
-    if (Velocity == Vector3.zero)
+    if (Velocity.magnitude < fishAttributes.minSpeed)
     {
-      Debug.LogAssertion("Velocity is zero");
+      Velocity *= fishAttributes.minSpeed;
     }
 
     transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(Velocity), fishAttributes.turnFactor * Time.deltaTime);
@@ -75,18 +87,17 @@ public class Fish : MonoBehaviour
 
   private void AlignWithOthers()
   {
-    // Alignment
+    // Alignment - move in the same direction as visible fish
     int visibleFishCount = 0;
     Vector3 averageVelocity = Vector3.zero;
     foreach (GameObject fishGameObject in schoolManager.AllFish)
     {
-      if ((transform.position - fishGameObject.transform.position).magnitude <= fishAttributes.alignmentRange)
+      if ((transform.position - fishGameObject.transform.position).magnitude <= fishAttributes.visibleRange)
       {
         visibleFishCount += 1;
         Fish fish = fishGameObject.GetComponent<Fish>();
         averageVelocity += fish.Velocity;
       }
-
     }
 
     if (visibleFishCount > 0)
@@ -97,16 +108,50 @@ public class Fish : MonoBehaviour
     Velocity += (averageVelocity - Velocity) * fishAttributes.alignmentFactor;
   }
 
+  private void Cohere()
+  {
+    // Cohesion - move gradually towards the centre of mass of visible fish
+    int visibleFishCount = 0;
+    Vector3 centreOfMass = Vector3.zero;
+    foreach (GameObject fishGameObject in schoolManager.AllFish)
+    {
+      if ((transform.position - fishGameObject.transform.position).magnitude <= fishAttributes.visibleRange)
+      {
+        visibleFishCount += 1;
+        centreOfMass += fishGameObject.transform.position;
+      }
+    }
+
+    if (visibleFishCount > 0)
+    {
+      centreOfMass /= visibleFishCount;
+    }
+
+    Velocity += (centreOfMass - transform.position) * fishAttributes.centeringFactor;
+  }
+
+  private void MoveWithBiasGroup()
+  {
+    if (this.Group == BiasGroup.Lefties)
+    {
+      Velocity = new Vector3(Velocity.x - BiasFactor, Velocity.y, Velocity.z);
+    }
+    else if (this.Group == BiasGroup.Righties)
+    {
+      Velocity = new Vector3(Velocity.x + BiasFactor, Velocity.y, Velocity.z);
+    }
+  }
+
   private void AvoidOthers()
   {
-    // Separation
+    // Separation - avoid other fish
     Vector3 distanceSum = Vector3.zero;
     foreach (GameObject fish in schoolManager.AllFish)
     {
-      Vector3 distanceToFish = transform.position - fish.transform.position;
-      if (distanceToFish.magnitude <= fishAttributes.separationRange)
+      Vector3 distanceToOther = transform.position - fish.transform.position;
+      if (distanceToOther.magnitude <= fishAttributes.separationRange)
       {
-        distanceSum += distanceToFish;
+        distanceSum += distanceToOther;
       }
     }
 
@@ -124,6 +169,6 @@ public class Fish : MonoBehaviour
     debugSeparationSphere.transform.localScale = fishAttributes.separationRange * 2 * Vector3.one;
 
     debugAlignmentSphere.SetActive(fishAttributes.debugAlignment);
-    debugAlignmentSphere.transform.localScale = fishAttributes.alignmentRange * 2 * Vector3.one;
+    debugAlignmentSphere.transform.localScale = fishAttributes.visibleRange * 2 * Vector3.one;
   }
 }

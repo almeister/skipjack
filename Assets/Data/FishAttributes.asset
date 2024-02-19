@@ -19,7 +19,10 @@ MonoBehaviour:
   maxSpeed: 13.5
   turnFactor: 23.7
   separationRange: 2
-  separationFactor: 2.54
-  alignmentRange: 2.5
-  alignmentFactor: 0.05
-  wallAvoidanceFactor: 25.8
+  separationFactor: 0.51
+  visibleRange: 3.01
+  alignmentFactor: 0.25
+  centeringFactor: 0.17
+  wallAvoidanceFactor: 229
+  minBiasFactor: 0.05
+  maxBiasFactor: 0.1
