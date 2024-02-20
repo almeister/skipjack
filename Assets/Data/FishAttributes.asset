@@ -15,14 +15,15 @@ MonoBehaviour:
   debugPointer: 0
   debugSeparation: 0
   debugAlignment: 0
+  minCoolDown: 0.237
+  maxCoolDown: 1
   minSpeed: 2
-  maxSpeed: 13.5
-  turnFactor: 23.7
-  separationRange: 2
-  separationFactor: 0.51
-  visibleRange: 3.01
-  alignmentFactor: 0.25
-  centeringFactor: 0.17
+  maxSpeed: 8.4
+  turnFactor: 10.6
+  separationRange: 1.42
+  separationFactor: 4.2
+  visibleRange: 5
+  alignmentFactor: 0.017
+  centeringFactor: 0
   wallAvoidanceFactor: 229
-  minBiasFactor: 0.05
-  maxBiasFactor: 0.1
+  leftRightBias: 1.0025

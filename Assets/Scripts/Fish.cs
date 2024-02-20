@@ -2,15 +2,8 @@ using UnityEngine;
 
 public class Fish : MonoBehaviour
 {
-  public Vector3 Velocity { get; set; } = Vector3.zero;
-
-  public enum BiasGroup
-  {
-    Lefties = 0,
-    Righties = 1
-  }
-  public BiasGroup Group { get; set; }
-  public float BiasFactor { get; set; }
+  public Vector3 velocity = Vector3.zero;
+  public Vector3 Velocity { get { return this.velocity; } set { this.velocity = value; } }
 
   [SerializeField] FishAttributesScriptableObject fishAttributes;
 
@@ -19,36 +12,55 @@ public class Fish : MonoBehaviour
   GameObject debugSeparationSphere;
   GameObject debugAlignmentSphere;
 
+  float coolDownTime = 0f;
+  float coolDownPeriod = 0f;
+
   void Start()
   {
     schoolManager = transform.parent.GetComponent<SchoolManager>();
-    Velocity = new Vector3(Random.Range(fishAttributes.minSpeed, fishAttributes.maxSpeed), 0, 0);
+    Velocity = new Vector3(-Random.Range(fishAttributes.minSpeed, fishAttributes.maxSpeed), 0, 0);
 
     debugSeparationSphere = transform.Find("DebugSeparationSphere").gameObject;
     debugAlignmentSphere = transform.Find("DebugAlignmentSphere").gameObject;
-
-    Group = Random.Range(0, 1f) < 0.5f ? BiasGroup.Lefties : BiasGroup.Righties;
-    BiasFactor = Random.Range(fishAttributes.minBiasFactor, fishAttributes.maxBiasFactor);
   }
 
   void Update()
   {
     ShowDebugFeatures();
 
-    AvoidOthers();
-    AlignWithOthers();
-    Cohere();
-    MoveWithBiasGroup();
-    AvoidBounds();
-
-    Velocity = Vector3.ClampMagnitude(Velocity, fishAttributes.maxSpeed);
-    if (Velocity.magnitude < fishAttributes.minSpeed)
+    coolDownTime += Time.deltaTime;
+    if (coolDownTime >= coolDownPeriod)
     {
-      Velocity *= fishAttributes.minSpeed;
+      AvoidOthers();
+      AlignWithOthers();
+      Cohere();
+      AvoidBounds();
+      ClampSpeed();
+
+      coolDownPeriod = Random.Range(fishAttributes.minCoolDown, fishAttributes.maxCoolDown);
     }
 
     transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(Velocity), fishAttributes.turnFactor * Time.deltaTime);
     transform.Translate(Velocity * Time.deltaTime, Space.World);
+  }
+
+  private void ClampSpeed()
+  {
+    // Squared magnitude used for speed https://docs.unity3d.com/ScriptReference/Vector3-sqrMagnitude.html
+    double squaredMag = Velocity.sqrMagnitude;
+    if (squaredMag > (double)fishAttributes.maxSpeed * (double)fishAttributes.maxSpeed)
+    {
+      Velocity = Velocity.normalized * fishAttributes.maxSpeed;
+    }
+    else if (squaredMag < (double)fishAttributes.minSpeed * (double)fishAttributes.minSpeed)
+    {
+      Velocity = Velocity.normalized * fishAttributes.minSpeed;
+    }
+  }
+
+  private void AlignLeftRight()
+  {
+    Velocity = Vector3.Scale(Velocity, new Vector3(fishAttributes.leftRightBias, 1, 1));
   }
 
   private void AvoidBounds()
@@ -103,9 +115,9 @@ public class Fish : MonoBehaviour
     if (visibleFishCount > 0)
     {
       averageVelocity /= visibleFishCount;
+      Velocity += (averageVelocity - Velocity) * fishAttributes.alignmentFactor;
     }
 
-    Velocity += (averageVelocity - Velocity) * fishAttributes.alignmentFactor;
   }
 
   private void Cohere()
@@ -125,21 +137,9 @@ public class Fish : MonoBehaviour
     if (visibleFishCount > 0)
     {
       centreOfMass /= visibleFishCount;
+      Velocity += (centreOfMass - transform.position) * fishAttributes.centeringFactor;
     }
 
-    Velocity += (centreOfMass - transform.position) * fishAttributes.centeringFactor;
-  }
-
-  private void MoveWithBiasGroup()
-  {
-    if (this.Group == BiasGroup.Lefties)
-    {
-      Velocity = new Vector3(Velocity.x - BiasFactor, Velocity.y, Velocity.z);
-    }
-    else if (this.Group == BiasGroup.Righties)
-    {
-      Velocity = new Vector3(Velocity.x + BiasFactor, Velocity.y, Velocity.z);
-    }
   }
 
   private void AvoidOthers()
