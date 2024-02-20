@@ -58,11 +58,6 @@ public class Fish : MonoBehaviour
     }
   }
 
-  private void AlignLeftRight()
-  {
-    Velocity = Vector3.Scale(Velocity, new Vector3(fishAttributes.leftRightBias, 1, 1));
-  }
-
   private void AvoidBounds()
   {
     // Avoid tank walls
