@@ -20,8 +20,8 @@ public class Fish : MonoBehaviour
     schoolManager = transform.parent.GetComponent<SchoolManager>();
     Velocity = new Vector3(-Random.Range(fishAttributes.minSpeed, fishAttributes.maxSpeed), 0, 0);
 
-    debugSeparationSphere = transform.Find("DebugSeparationSphere").gameObject;
-    debugAlignmentSphere = transform.Find("DebugAlignmentSphere").gameObject;
+    debugSeparationSphere = transform.Find("PivotContainer/DebugSeparationSphere").gameObject;
+    debugAlignmentSphere = transform.Find("PivotContainer/DebugAlignmentSphere").gameObject;
   }
 
   void Update()
