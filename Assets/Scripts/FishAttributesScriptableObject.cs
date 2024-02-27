@@ -7,6 +7,9 @@ public class FishAttributesScriptableObject : ScriptableObject
   public bool debugSeparation = false;
   public bool debugAlignment = false;
 
+  [Range(0.1f, 1f)] public float minScale = 0.75f;
+  [Range(1f, 5f)] public float maxScale = 1.8f;
+
   [Range(0, 1f)] public float minCoolDown = 0.2f;
   [Range(0, 1f)] public float maxCoolDown = 0.6f;
 

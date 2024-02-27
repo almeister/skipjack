@@ -22,6 +22,8 @@ public class Fish : MonoBehaviour
 
     debugSeparationSphere = transform.Find("PivotContainer/DebugSeparationSphere").gameObject;
     debugAlignmentSphere = transform.Find("PivotContainer/DebugAlignmentSphere").gameObject;
+
+    transform.localScale = Vector3.one * Random.Range(fishAttributes.minScale, fishAttributes.maxScale);
   }
 
   void Update()
