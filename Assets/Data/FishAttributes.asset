@@ -19,13 +19,13 @@ MonoBehaviour:
   maxScale: 1.32
   minCoolDown: 0.237
   maxCoolDown: 1
-  minSpeed: 2
-  maxSpeed: 3.9
-  turnFactor: 5.1
-  separationRange: 1.31
-  separationFactor: 3
-  visibleRange: 3.58
-  alignmentFactor: 0.011
-  centeringFactor: 0.003
-  wallAvoidanceFactor: 208
+  minSpeed: 2.22
+  maxSpeed: 2.5
+  turnFactor: 6.4
+  separationRange: 1.4
+  separationFactor: 2.1
+  visibleRange: 2.25
+  alignmentFactor: 0.0089
+  centeringFactor: 0.0025
+  wallAvoidanceFactor: 153
   fleeFactor: 44.5
