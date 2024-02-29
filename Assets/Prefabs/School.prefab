@@ -59,7 +59,7 @@ GameObject:
   - component: {fileID: 2810170244298636741}
   - component: {fileID: 5308471988013580562}
   - component: {fileID: 1322469494079662500}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Tank
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -76,7 +76,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 50, y: 20, z: 10}
+  m_LocalScale: {x: 20, y: 8, z: 8}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4567219047513320359}
@@ -165,6 +165,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Tuna
       objectReference: {fileID: 0}
+    - target: {fileID: 4989768604584722674, guid: 256658a6233f61d4ba4334f301e2e863,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8883991122987493955, guid: 256658a6233f61d4ba4334f301e2e863,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -183,7 +188,7 @@ PrefabInstance:
     - target: {fileID: 8883991122987493955, guid: 256658a6233f61d4ba4334f301e2e863,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: 8883991122987493955, guid: 256658a6233f61d4ba4334f301e2e863,
         type: 3}
@@ -193,7 +198,7 @@ PrefabInstance:
     - target: {fileID: 8883991122987493955, guid: 256658a6233f61d4ba4334f301e2e863,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: 0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: 8883991122987493955, guid: 256658a6233f61d4ba4334f301e2e863,
         type: 3}
@@ -208,7 +213,7 @@ PrefabInstance:
     - target: {fileID: 8883991122987493955, guid: 256658a6233f61d4ba4334f301e2e863,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: 90
       objectReference: {fileID: 0}
     - target: {fileID: 8883991122987493955, guid: 256658a6233f61d4ba4334f301e2e863,
         type: 3}

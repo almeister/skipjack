@@ -15,6 +15,6 @@ MonoBehaviour:
   debugTank: 0
   fishPrefab: {fileID: 4989768604584722674, guid: 256658a6233f61d4ba4334f301e2e863,
     type: 3}
-  fishCount: 30
-  tankDimensions: {x: 10, y: 8, z: 8}
+  fishCount: 45
+  tankDimensions: {x: 20, y: 8, z: 8}
   tankMargin: 0.5

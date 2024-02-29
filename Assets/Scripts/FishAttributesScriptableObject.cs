@@ -26,4 +26,6 @@ public class FishAttributesScriptableObject : ScriptableObject
   [Range(0, 10f)] public float centeringFactor = 1f;
 
   [Range(0, 1000f)] public float wallAvoidanceFactor = 2f;
+
+  [Range(0, 100f)] public float fleeFactor = 10f;
 }

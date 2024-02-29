@@ -29,6 +29,15 @@ public class SchoolManager : MonoBehaviour
     ProcessDebugFeatures();
   }
 
+  public void DisturbFish(Vector3 worldPosition)
+  {
+    foreach (GameObject fishGameObject in AllFish)
+    {
+      Fish fish = fishGameObject.GetComponent<Fish>();
+      fish.Flee(worldPosition);
+    }
+  }
+
   private void ProcessDebugFeatures()
   {
     debugTankTransform.localScale = TankDimensions;

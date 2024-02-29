@@ -46,6 +46,12 @@ public class Fish : MonoBehaviour
     transform.Translate(Velocity * Time.deltaTime, Space.World);
   }
 
+  public void Flee(Vector3 pos)
+  {
+    Vector3 distanceToThreat = transform.position - pos;
+    Velocity += fishAttributes.fleeFactor * distanceToThreat.normalized;
+  }
+
   private void ClampSpeed()
   {
     // Squared magnitude used for speed https://docs.unity3d.com/ScriptReference/Vector3-sqrMagnitude.html

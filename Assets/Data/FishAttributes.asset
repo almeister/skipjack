@@ -20,11 +20,12 @@ MonoBehaviour:
   minCoolDown: 0.237
   maxCoolDown: 1
   minSpeed: 2
-  maxSpeed: 8.4
-  turnFactor: 10.6
-  separationRange: 1.5
-  separationFactor: 3.8
+  maxSpeed: 3.9
+  turnFactor: 5.1
+  separationRange: 1.31
+  separationFactor: 3
   visibleRange: 3.58
-  alignmentFactor: 0.021
+  alignmentFactor: 0.011
   centeringFactor: 0.003
-  wallAvoidanceFactor: 284
+  wallAvoidanceFactor: 208
+  fleeFactor: 44.5
