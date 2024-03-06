@@ -2,12 +2,11 @@ using UnityEngine;
 
 public class Fish : MonoBehaviour
 {
-  public Vector3 velocity = Vector3.zero;
-  public Vector3 Velocity { get { return this.velocity; } set { this.velocity = value; } }
-
   [SerializeField] FishAttributesScriptableObject fishAttributes;
 
   SchoolManager schoolManager;
+
+  Vector3 velocity = Vector3.zero;
 
   GameObject debugSeparationSphere;
   GameObject debugAlignmentSphere;
@@ -18,7 +17,7 @@ public class Fish : MonoBehaviour
   void Start()
   {
     schoolManager = transform.parent.GetComponent<SchoolManager>();
-    Velocity = new Vector3(-Random.Range(fishAttributes.minSpeed, fishAttributes.maxSpeed), 0, 0);
+    velocity = new Vector3(-Random.Range(fishAttributes.minSpeed, fishAttributes.maxSpeed), 0, 0);
 
     debugSeparationSphere = transform.Find("PivotContainer/DebugSeparationSphere").gameObject;
     debugAlignmentSphere = transform.Find("PivotContainer/DebugAlignmentSphere").gameObject;
@@ -30,6 +29,20 @@ public class Fish : MonoBehaviour
   {
     ShowDebugFeatures();
 
+    ProcessFlockingAterCooldown();
+
+    transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(velocity), fishAttributes.turnFactor * Time.deltaTime);
+    transform.Translate(velocity * Time.deltaTime, Space.World);
+  }
+
+  public void Flee(Vector3 pos)
+  {
+    Vector3 distanceToThreat = transform.position - pos;
+    velocity += fishAttributes.fleeFactor * distanceToThreat.normalized;
+  }
+
+  private void ProcessFlockingAterCooldown()
+  {
     coolDownTime += Time.deltaTime;
     if (coolDownTime >= coolDownPeriod)
     {
@@ -41,62 +54,53 @@ public class Fish : MonoBehaviour
 
       coolDownPeriod = Random.Range(fishAttributes.minCoolDown, fishAttributes.maxCoolDown);
     }
-
-    transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(Velocity), fishAttributes.turnFactor * Time.deltaTime);
-    transform.Translate(Velocity * Time.deltaTime, Space.World);
-  }
-
-  public void Flee(Vector3 pos)
-  {
-    Vector3 distanceToThreat = transform.position - pos;
-    Velocity += fishAttributes.fleeFactor * distanceToThreat.normalized;
   }
 
   private void ClampSpeed()
   {
-    // Squared magnitude used for speed https://docs.unity3d.com/ScriptReference/Vector3-sqrMagnitude.html
-    double squaredMag = Velocity.sqrMagnitude;
+    // Squared magnitude used for performance https://docs.unity3d.com/ScriptReference/Vector3-sqrMagnitude.html
+    double squaredMag = velocity.sqrMagnitude;
     if (squaredMag > (double)fishAttributes.maxSpeed * (double)fishAttributes.maxSpeed)
     {
-      Velocity = Velocity.normalized * fishAttributes.maxSpeed;
+      velocity = velocity.normalized * fishAttributes.maxSpeed;
     }
     else if (squaredMag < (double)fishAttributes.minSpeed * (double)fishAttributes.minSpeed)
     {
-      Velocity = Velocity.normalized * fishAttributes.minSpeed;
+      velocity = velocity.normalized * fishAttributes.minSpeed;
     }
   }
 
   private void AvoidBounds()
   {
     // Avoid tank walls
-    if (transform.position.x > schoolManager.SwimmingBounds.x)
+    if (transform.position.x > schoolManager.SwimmingBounds.max.x)
     {
-      Velocity -= new Vector3(fishAttributes.wallAvoidanceFactor * Time.deltaTime, 0, 0);
+      velocity -= new Vector3(fishAttributes.wallAvoidanceFactor * Time.deltaTime, 0, 0);
     }
 
-    if (transform.position.y > schoolManager.SwimmingBounds.y)
+    if (transform.position.y > schoolManager.SwimmingBounds.max.y)
     {
-      Velocity -= new Vector3(0, fishAttributes.wallAvoidanceFactor * Time.deltaTime, 0);
+      velocity -= new Vector3(0, fishAttributes.wallAvoidanceFactor * Time.deltaTime, 0);
     }
 
-    if (transform.position.z > schoolManager.SwimmingBounds.z)
+    if (transform.position.z > schoolManager.SwimmingBounds.max.z)
     {
-      Velocity -= new Vector3(0, 0, fishAttributes.wallAvoidanceFactor * Time.deltaTime);
+      velocity -= new Vector3(0, 0, fishAttributes.wallAvoidanceFactor * Time.deltaTime);
     }
 
-    if (transform.position.x < -schoolManager.SwimmingBounds.x)
+    if (transform.position.x < schoolManager.SwimmingBounds.min.x)
     {
-      Velocity += new Vector3(fishAttributes.wallAvoidanceFactor * Time.deltaTime, 0, 0);
+      velocity += new Vector3(fishAttributes.wallAvoidanceFactor * Time.deltaTime, 0, 0);
     }
 
-    if (transform.position.y < -schoolManager.SwimmingBounds.y)
+    if (transform.position.y < schoolManager.SwimmingBounds.min.y)
     {
-      Velocity += new Vector3(0, fishAttributes.wallAvoidanceFactor * Time.deltaTime, 0);
+      velocity += new Vector3(0, fishAttributes.wallAvoidanceFactor * Time.deltaTime, 0);
     }
 
-    if (transform.position.z < -schoolManager.SwimmingBounds.z)
+    if (transform.position.z < schoolManager.SwimmingBounds.min.z)
     {
-      Velocity += new Vector3(0, 0, fishAttributes.wallAvoidanceFactor * Time.deltaTime);
+      velocity += new Vector3(0, 0, fishAttributes.wallAvoidanceFactor * Time.deltaTime);
     }
   }
 
@@ -111,14 +115,14 @@ public class Fish : MonoBehaviour
       {
         visibleFishCount += 1;
         Fish fish = fishGameObject.GetComponent<Fish>();
-        averageVelocity += fish.Velocity;
+        averageVelocity += fish.velocity;
       }
     }
 
     if (visibleFishCount > 0)
     {
       averageVelocity /= visibleFishCount;
-      Velocity += (averageVelocity - Velocity) * fishAttributes.alignmentFactor;
+      velocity += (averageVelocity - velocity) * fishAttributes.alignmentFactor;
     }
 
   }
@@ -140,7 +144,7 @@ public class Fish : MonoBehaviour
     if (visibleFishCount > 0)
     {
       centreOfMass /= visibleFishCount;
-      Velocity += (centreOfMass - transform.position) * fishAttributes.centeringFactor;
+      velocity += (centreOfMass - transform.position) * fishAttributes.centeringFactor;
     }
 
   }
@@ -158,7 +162,7 @@ public class Fish : MonoBehaviour
       }
     }
 
-    Velocity += distanceSum * fishAttributes.separationFactor;
+    velocity += distanceSum * fishAttributes.separationFactor;
   }
 
   private void ShowDebugFeatures()

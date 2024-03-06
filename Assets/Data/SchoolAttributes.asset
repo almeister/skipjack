@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10acde41faa14a1469e1fd097e465789, type: 3}
   m_Name: SchoolAttributes
   m_EditorClassIdentifier: 
-  debugTank: 0
+  showDebugTank: 0
   fishPrefab: {fileID: 4989768604584722674, guid: 256658a6233f61d4ba4334f301e2e863,
     type: 3}
   fishCount: 45
   tankDimensions: {x: 20, y: 8, z: 9}
-  tankMargin: 0.5
+  tankMargin: 1

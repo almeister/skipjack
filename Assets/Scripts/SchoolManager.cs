@@ -6,21 +6,18 @@ public class SchoolManager : MonoBehaviour
 
   public GameObject[] AllFish { get; set; }
 
-  Transform debugTankTransform;
+  public GameObject debugTank;
+  public GameObject debugSwimmingBounds;
 
-  public Vector3 TankDimensions
+  public Bounds SwimmingBounds { get { return new Bounds(transform.position, TankDimensions - 2 * schoolAttributes.tankMargin * Vector3.one); } }
+
+  Vector3 TankDimensions
   {
     get { return schoolAttributes.tankDimensions; }
   }
 
-  public Vector3 SwimmingBounds
-  {
-    get { return schoolAttributes.tankDimensions - schoolAttributes.tankDimensions / 2 - new Vector3(schoolAttributes.tankMargin, schoolAttributes.tankMargin, schoolAttributes.tankMargin); }
-  }
-
   void Start()
   {
-    debugTankTransform = transform.Find("Tank");
     SpawnFish();
   }
 
@@ -40,8 +37,11 @@ public class SchoolManager : MonoBehaviour
 
   private void ProcessDebugFeatures()
   {
-    debugTankTransform.localScale = TankDimensions;
-    debugTankTransform.gameObject.SetActive(schoolAttributes.debugTank);
+    debugTank.transform.localScale = TankDimensions;
+    debugTank.SetActive(schoolAttributes.showDebugTank);
+
+    debugSwimmingBounds.transform.localScale = SwimmingBounds.size;
+    debugSwimmingBounds.SetActive(schoolAttributes.showDebugTank);
   }
 
   private void SpawnFish()
@@ -49,9 +49,9 @@ public class SchoolManager : MonoBehaviour
     AllFish = new GameObject[schoolAttributes.fishCount];
     for (int i = 0; i < schoolAttributes.fishCount; i++)
     {
-      Vector3 spawnPosition = new Vector3(Random.Range(-SwimmingBounds.x, SwimmingBounds.x),
-                                      Random.Range(-SwimmingBounds.y, SwimmingBounds.y),
-                                      Random.Range(-SwimmingBounds.z, SwimmingBounds.z));
+      Vector3 spawnPosition = new Vector3(Random.Range(SwimmingBounds.min.x, SwimmingBounds.max.x),
+                                      Random.Range(SwimmingBounds.min.y, SwimmingBounds.max.y),
+                                      Random.Range(SwimmingBounds.min.z, SwimmingBounds.max.z));
       AllFish[i] = GameObject.Instantiate(schoolAttributes.fishPrefab, spawnPosition, Quaternion.identity, transform);
     }
   }
